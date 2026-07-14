@@ -266,7 +266,7 @@ waypoints.yaml
 Example:
 
 ```bash
-python3 navigation_to_named_waypoints/goto_waypoint.py table
+python3 goto_waypoint.py table
 ```
 
 The robot will:
