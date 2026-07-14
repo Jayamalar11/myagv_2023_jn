@@ -1,4 +1,4 @@
-#note that this is just the sample of the waypoints. you can change the name of waypints here
+#sample waypoint.yaml
 fruit:
   x: 0.916
   y: 0.433
