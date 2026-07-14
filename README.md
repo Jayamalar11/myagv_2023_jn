@@ -223,7 +223,7 @@ Uses the Nav2 `BasicNavigator` API to:
 ## Step 1 — Launch Navigation
 
 ```bash
-ros2 launch myagv_navigation2 navigation2_active.launch.py
+ros2 launch myagv_navigation2 navigation2_active.launch.py map:=/path-to-your-map.yaml
 ```
 
 This starts:
@@ -244,19 +244,13 @@ Drive the robot using the **Nav2 Goal Tool** in RViz.
 After the robot reaches the desired location:
 
 ```bash
-python3 navigation_to_named_waypoints/waypoint_recorder.py
+python3 waypoint_recorder.py
 ```
 
 Example prompt:
 
 ```
 Enter waypoint name:
-```
-
-Type:
-
-```
-table
 ```
 
 The pose is automatically saved into:
