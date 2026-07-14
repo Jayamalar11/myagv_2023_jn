@@ -1,0 +1,25 @@
+#note that this is just the sample of the waypoints. you can change the name of waypints here
+fruit:
+  x: 0.916
+  y: 0.433
+  yaw: 2.306
+vegetable:
+  x: 0.006
+  y: 0.0
+  yaw: 0.076
+flower:
+  x: -3.2
+  y: -0.286
+  yaw: -3.062
+plant:
+  x: -2.207
+  y: -0.034
+  yaw: -1.269
+table:
+  x: -0.052
+  y: -0.542
+  yaw: 1.281
+chair:
+  x: -4.542
+  y: -0.421
+  yaw: -0.116
