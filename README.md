@@ -6,15 +6,15 @@ An integrated navigation and control stack for the **Elephant Robotics myAGV (20
 
 # Features
 
-- ArUco marker following
-- Human following using MediaPipe Pose
+- ArUco marker following (ROS 1)
+- Human following using MediaPipe Pose (ROS 1)
 - Navigation to named waypoints using ROS 2 Nav2
 
 ---
 
 # Ground Zero: System Prerequisites & Initialization
 
-Before running any application modules, initialize the core hardware communication layer to bridge your Python nodes with the myAGV hardware.
+Before running any application modules, initialize the required hardware and software components for your selected module.
 
 > **First-Time Setup**
 >
@@ -24,19 +24,7 @@ Before running any application modules, initialize the core hardware communicati
 
 ---
 
-## Launch Base Odometry
-
-Open a terminal on the Jetson Nano and run:
-
-```bash
-roslaunch myagv_odometry myagv_active.launch
-```
-
-Keep this terminal running while using any module in this repository.
-
----
-
-# Module 1 — ArUco Marker Follower
+# Module 1 — ArUco Marker Follower (ROS 1)
 
 The **ArUco Marker Follower** uses OpenCV's ArUco detection to locate and follow printed fiducial markers while maintaining a safe distance.
 
@@ -56,7 +44,7 @@ The **ArUco Marker Follower** uses OpenCV's ArUco detection to locate and follow
 - Angular velocity limited between:
 
 ```
--0.6 rad/s  →  0.6 rad/s
+-0.6 rad/s → 0.6 rad/s
 ```
 
 ### Distance Regulation
@@ -64,7 +52,7 @@ The **ArUco Marker Follower** uses OpenCV's ArUco detection to locate and follow
 Maintains an ideal following distance using marker width:
 
 ```
-190 px  ← Ideal Distance → 210 px
+190 px ← Ideal Distance → 210 px
 ```
 
 ### Fault Tolerance
@@ -77,23 +65,27 @@ If the marker is temporarily lost because of:
 - glare
 - camera noise
 
-the robot continues its previous motion briefly instead of stopping abruptly.
+The robot continues its previous motion briefly instead of stopping abruptly.
 
 ---
 
 ## Running the ArUco Follower
 
-### Terminal 1
-
-Launch the Astra Pro Plus camera.
+### Terminal 1 — Launch Camera
 
 ```bash
-roslaunch astra_camera astra_pro_plus.launch
+roslaunch orbbec_camera astra_pro2.launch
 ```
 
-### Terminal 2
+### Terminal 2 — Launch myAGV Odometry
 
-Run the follower node.
+```bash
+roslaunch myagv_odometry myagv_active.launch
+```
+
+### Terminal 3 — Run the ArUco Follower
+
+Navigate to the project directory containing the script and run:
 
 ```bash
 python3 aruco_follower.py
@@ -101,11 +93,11 @@ python3 aruco_follower.py
 
 ---
 
-# Module 2 — Human Follower
+# Module 2 — Human Follower (ROS 1)
 
 This module follows a human using **Google MediaPipe Pose Estimation**.
 
-Instead of tracking hands or feet, it follows the user's torso for much smoother movement.
+Instead of tracking hands or feet, it follows the user's torso for smoother and more stable movement.
 
 ---
 
@@ -142,13 +134,21 @@ Features include:
 
 ## Running the Human Follower
 
-### Terminal 1
+### Terminal 1 — Launch Camera
 
 ```bash
-roslaunch astra_camera astra_pro_plus.launch
+roslaunch orbbec_camera astra_pro2.launch
 ```
 
-### Terminal 2
+### Terminal 2 — Launch myAGV Odometry
+
+```bash
+roslaunch myagv_odometry myagv_active.launch
+```
+
+### Terminal 3 — Run the Human Follower
+
+Navigate to the project directory containing the script and run:
 
 ```bash
 python3 human_following.py
@@ -156,7 +156,7 @@ python3 human_following.py
 
 ---
 
-# Module 3 — Navigation to Named Waypoints
+# Module 3 — Navigation to Named Waypoints (ROS 2)
 
 This module provides an intuitive waypoint management system using **ROS 2 Nav2**.
 
@@ -188,15 +188,6 @@ Waypoints are stored inside:
 waypoints.yaml
 ```
 
-using semantic names such as:
-
-- table
-- kitchen
-- fruit
-- charging_station
-
----
-
 ### Non-Blocking Recorder
 
 The recorder:
@@ -204,8 +195,6 @@ The recorder:
 - subscribes to `/amcl_pose`
 - uses a `MultiThreadedExecutor`
 - allows terminal input while ROS continues spinning
-
----
 
 ### Autonomous Navigation
 
@@ -218,9 +207,25 @@ Uses the Nav2 `BasicNavigator` API to:
 
 ---
 
-# Navigation Workflow
+# Navigation Workflow (ROS 2)
 
-## Step 1 — Launch Navigation
+## Terminal 1 — Start the LiDAR
+
+```bash
+./start_ydlidar.sh
+```
+
+---
+
+## Terminal 2 — Launch myAGV Odometry
+
+```bash
+ros2 launch myagv_odometry myagv_active.launch
+```
+
+---
+
+## Terminal 3 — Launch Navigation Stack
 
 ```bash
 ros2 launch myagv_navigation2 navigation2_active.launch.py map:=/path-to-your-map.yaml
@@ -237,14 +242,18 @@ This starts:
 
 ---
 
-## Step 2 — Record a Waypoint
+## Step 1 — Record a Waypoint
 
-Drive the robot using the **Nav2 Goal Tool** in RViz.
+Navigate to the scripts directory:
 
-After the robot reaches the desired location:
+```text
+~/myagv_ros2/src/myagv_navigation2/scripts/
+```
+
+Run:
 
 ```bash
-python3 waypoint_recorder.py
+python3 record_waypoints.py
 ```
 
 Example prompt:
@@ -253,7 +262,7 @@ Example prompt:
 Enter waypoint name:
 ```
 
-The pose is automatically saved into:
+The current robot pose is automatically saved to:
 
 ```
 waypoints.yaml
@@ -261,19 +270,23 @@ waypoints.yaml
 
 ---
 
-## Step 3 — Navigate to a Saved Waypoint
+## Step 2 — Navigate to a Saved Waypoint
 
-Example:
+From the same scripts directory:
+
+```text
+~/myagv_ros2/src/myagv_navigation2/scripts/
+```
+
+Run:
 
 ```bash
-python3 goto_waypoint.py 
+python3 goto_waypoint.py
 ```
 
 The robot will:
 
-- load the waypoint
+- load the selected waypoint
 - compute a global path
-- display the path in RViz
-- autonomously drive to the destination
-
----
+- visualize the path in RViz
+- autonomously navigate to the destination
