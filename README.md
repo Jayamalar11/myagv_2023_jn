@@ -265,7 +265,7 @@ Enter waypoint name:
 The current robot pose is automatically saved to:
 
 ```
-waypoints.yaml
+~/myagv_ros2/src/myagv_navigation2/config/waypoints.yaml
 ```
 
 ---
